@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package federated;
+
+message ClientHello {
+  int32 cid = 1;
+}
+
+message ModelParameters {
+  repeated double coef_values = 1;
+  repeated int32 coef_shape = 2;
+  repeated double intercept_values = 3;
+}
+
+message GlobalModel {
+  int32 round = 1;
+  int32 total_rounds = 2;
+  bool done = 3;
+  string message = 4;
+  ModelParameters model = 5;
+}
+
+message ClientUpdate {
+  int32 cid = 1;
+  int32 round = 2;
+  int32 num_examples = 3;
+  double train_loss = 4;
+  double train_acc = 5;
+  ModelParameters model = 6;
+}
+
+message UpdateAck {
+  bool accepted = 1;
+  string message = 2;
+  int32 server_round = 3;
+}
+
+service FederatedLearning {
+  rpc GetGlobalModel (ClientHello) returns (GlobalModel);
+  rpc SubmitUpdate (ClientUpdate) returns (UpdateAck);
+}
